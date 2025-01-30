@@ -464,10 +464,10 @@ class StockController extends Controller
             $totalShortage = $this->getShortages($purchaseItem->id, $firstDate, $lastDate);
             $totalExccess= $this->getExcesses($purchaseItem->id, $firstDate, $lastDate);
 
-            $totalReturn= $this->getSaleReturn($purchaseItem->id, $firstDate, $lastDate);
+            $totalPurchaseReturn= $this->getPurchaseReturn($purchaseItem->id, $firstDate, $lastDate);
 
             // Closing balance is calculated as opening balance + purchases - consumption
-            $closingBalance = $openingBalance + $totalPurchasesAndPrices['totalPurchases']  + $totalReturn + $totalExccess - ($totalShortage + $totalConsumption);
+            $closingBalance = $openingBalance + $totalPurchasesAndPrices['totalPurchases']  + $totalPurchaseReturn + $totalExccess - ($totalShortage + $totalConsumption);
 
             // Add the opening balance entry to the ledger for each item
             $ledger[] = [
@@ -479,7 +479,7 @@ class StockController extends Controller
                 'total_consumption' => $totalConsumption,
                 'total_shortage' => $totalShortage,
                 'total_exccess' => $totalExccess,
-                'total_return' =>  $totalReturn,
+                'total_return' =>  $totalPurchaseReturn,
                 'closing_balance' => $closingBalance,
                 'average_price' => $averagePrice,
                 'value_of_consumption' => $totalConsumption * $averagePrice,
@@ -608,10 +608,27 @@ class StockController extends Controller
         ->select('sales_returns.return_date', 'sales_return_items.return_quantity')
         ->get();
 
+        $totalExccess= 0;
+        foreach ($returns as $return) {
+                $totalExccess += $return->return_quantity;
+            }
 
-        if($itemId == 2) {
-       // dd($returns);
-        }
+        return $totalExccess;
+    }
+
+
+    private function getPurchaseReturn($itemId, $firstDate, $lastDate)
+    {
+
+        // Fetch and process sales returns (items with item_type = 'sale')
+        $returns = PurchaseReturnItem::where('product_id', $itemId)
+                ->join('pruchase_returns', 'pruchase_returns.id', '=', 'purchase_return_items.purchase_return_id')
+                ->whereBetween('pruchase_returns.return_date', [$firstDate, $lastDate])
+                ->select('pruchase_returns.return_date', 'purchase_return_items.return_quantity')
+                ->get();
+
+
+
 
         $totalExccess= 0;
         foreach ($returns as $return) {

@@ -201,13 +201,7 @@
                         <!-- Customer Details -->
                         <td rowspan="{{ count($return->items) }}">
                             <div class="d-flex align-items-center">
-                                <div class="flex-shrink-0 me-2">
-                                <img src="{{ \App\Models\CustomerDetail::where('account_id', $return->vendor_id)->value('avatar')
-                                                        ? Storage::disk('spaces')->url(\App\Models\CustomerDetail::where('account_id', $return->vendor_id)->value('avatar'))
-                                                        : asset('images/user-dummy-img.jpg') }}"
-                                                        alt="Customer Avatar" class="avatar-sm rounded-circle">
 
-                                </div>
                                 <div>
                                     <h5 class="fs-14 my-1 fw-medium">
                                     <span class="text-success text-uppercase">{{ \App\Models\ChartofAccount::find($return->vendor_id)->name ?? 'N/A' }}</span>
@@ -219,7 +213,7 @@
                     @endif
 
                     <!-- Product Information -->
-                    <td>{{ $products->find($item->product_id)->item_name ?? 'N/A' }}</td>
+                    <td>{{ $products->find($item->product_id)->name ?? 'N/A' }}</td>
                     <td>{{ $item->return_quantity }}</td>
                     <td>{{ number_format($item->unit_price, 2) }}</td>
                     <td>{{ number_format($item->return_amount, 2) }}</td>
@@ -230,7 +224,7 @@
                             <span class="badge bg-{{ $return->status === 'draft' ? 'danger' : 'success' }}">{{ ucfirst($return->status) }}</span>
                         </td>
                         <td rowspan="{{ count($return->items) }}">
-                            <div class="hstack gap-3 flex-wrap">
+                            <div class="hstack gap-1 flex-wrap">
 
                             @can('purchases return edit')
                                 <a wire:click="edit({{ $return->id }})" href="javascript:void(0);" class="link-success fs-15" title="Edit Return">
@@ -378,7 +372,7 @@
                                             <select wire:model="items.{{ $index }}.product_id" class="form-control form-select table-input">
                                                 <option value="">Select Product</option>
                                                 @foreach($products as $product)
-                                                    <option value="{{ $product->id }}">{{ $product->item_name }}</option>
+                                                    <option value="{{ $product->id }}">{{ $product->name }}</option>
                                                 @endforeach
                                             </select>
                                             @error("items.$index.product_id") <span class="text-danger">{{ $message }}</span> @enderror

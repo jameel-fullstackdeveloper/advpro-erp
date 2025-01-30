@@ -5,7 +5,7 @@ namespace App\Livewire\Purchase\Returns;
 use Livewire\Component;
 use App\Models\SalesOrder;
 use App\Models\SalesOrderItem;
-use App\Models\PurchaseItem;
+use App\Models\Items;
 use App\Models\SalesInvoice;
 use App\Models\PurchaseReturn;
 use App\Models\PurchaseReturnItem;
@@ -98,7 +98,9 @@ class PurchaseReturnManager extends Component
             ->paginate($this->itemsPerPage);
 
         // Fetch products filtered by company_id
-        $products = PurchaseItem::where('company_id', $companyId)->get();
+        $products = Items::where('item_type', 'purchase')
+        ->orderBy('name', 'asc')
+        ->get();
 
         // Fetch customers filtered by company_id
         $customers = ChartOfAccount::where('is_customer_vendor', 'vendor')
@@ -201,7 +203,7 @@ class PurchaseReturnManager extends Component
              // Gather product details (name and return quantity)
             $productDetails = collect($this->items)->map(function ($item) {
                 // Assuming you have a Product model and 'name' is a column in the products table
-                $product = PurchaseItem::find($item['product_id']);
+                $product = Items::find($item['product_id']);
                 if ($product) {
                     return $product->product_name . ' (' . $item['return_quantity'] . ')';
                 } else {
