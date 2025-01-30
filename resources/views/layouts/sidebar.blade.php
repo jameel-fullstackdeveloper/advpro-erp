@@ -399,7 +399,7 @@
             <li class="nav-item">
                     <a class="nav-link menu-link  {{ $isFarmsActive ? 'active' : '' }}" href="#sidebarFarms" data-bs-toggle="collapse" role="button"
                         aria-expanded="{{ $isFarmsActive ? 'true' : 'false' }}" aria-controls="sidebarFarms">
-                        <i class="ri-truck-line"></i> <span>Farms</span>
+                        <i class="bx bx-building-house"></i> <span>Farms</span>
                     </a>
                     <div class="collapse menu-dropdown {{ $isFarmsActive ? 'show' : '' }}" id="sidebarFarms">
                         <ul class="nav nav-sm flex-column">
