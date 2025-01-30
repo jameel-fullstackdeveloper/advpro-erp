@@ -216,7 +216,7 @@
                    </div>
 
                     <div class="text-center col-md-4">
-                        <h4 class="mb-0 text-white font-weight-bold text-uppercase" style="font-size: 16px;"> Trail Balance</h4>
+                        <h4 class="mb-0 text-white font-weight-bold text-uppercase" style="font-size: 16px;"> Trial Balance</h4>
                     </div>
 
                     <div class="text-end col-md-4">
