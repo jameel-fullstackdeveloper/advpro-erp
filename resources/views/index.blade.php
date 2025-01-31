@@ -41,7 +41,7 @@
 @if($company->type=="Feed Mill")
     <livewire:dashboard />
 
-    @if(auth()->user()->hasRole(['Administrator', 'Super Admin','Account Manager']))
+    @if(auth()->user()->hasRole(['Administrator', 'Super Admin','Accounts Manager']))
     <div class="row">
             <div class="col-xl-6">
                 <div class="card">
