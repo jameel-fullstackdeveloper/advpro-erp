@@ -83,7 +83,7 @@ small
 @auth
 
 
-    @if(auth()->user()->hasRole(['Administrator', 'Super Admin']))
+@if(auth()->user()->hasRole(['Administrator', 'Super Admin','Accounts Manager']))
 
 
 <!-- right offcanvas  Sales Overview-->
