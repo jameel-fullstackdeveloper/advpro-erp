@@ -383,7 +383,7 @@
 
             @php
                         // Check if the current route matches any of the inventory pages
-                        $isFarmsActive = Request::is('farms*') || Request::is('farms/farms') ||
+                        $isFarmsActive = Request::is('farms') || Request::is('farms/farms') ||
                         Request::is('farms/invoicesfarms') || Request::is('farms/bills/farms') || Request::is('farms/expenses') || Request::is('farms/stocks');
                         $isFarmsListActive = Request::is('farms/farms');
                         $isFarmInvoicesActive = Request::is('farms/invoicesfarms');
@@ -430,11 +430,6 @@
                             </li>
 
                             <li class="nav-item">
-                                <a href="{{ url('farms/stock') }}" class="nav-link {{ $isFarmStocksActive ? 'active' : '' }}">
-                                <span>Stock</span></a>
-                            </li>
-
-                            <li class="nav-item">
                                 <a href="{{ url('farms/reports') }}" class="nav-link {{ $isFarmStocksActive ? 'actived' : '' }}">
                                 <span>Reports</span></a>
                             </li>
@@ -471,13 +466,14 @@
 
         @php
                         // Check if the current route matches any of the inventory pages
-                        $isInventoryActive = Request::is('inventory*') || Request::is('salesproducts*') || Request::is('purchaseitems*');
+                        $isInventoryActive = Request::is('inventory*') || Request::is('salesproducts*') || Request::is('purchaseitems*') || Request::is('farms/stock');
                         $isInventorySalesProductActive = Request::is('inventory/salesproducts') || Request::is('inventory/salesproducts*');
                         $isInventoryPurchaseItemsActive = Request::is('inventory/purchaseitems') || Request::is('inventory/purchaseitems*');
                         $isInventoryConsumptionActive = Request::is('inventory/productions') || Request::is('inventory/productions*');
                         $isInventoryStockActive = Request::is('inventory/stock') || Request::is('inventory/stock/*');
                         $isInventoryStockActiveGoods = Request::is('inventory/stockgoods') || Request::is('inventory/stockgoods*');
                         $isInventoryAdjustmentsActive = Request::is('inventory/stockadjustments') || Request::is('inventory/stockadjustments*');
+                        $isMaterialTransfer = Request::is('farms/stock') || Request::is('farms/stock*');
             @endphp
 
             @php
@@ -513,6 +509,11 @@
                             <li class="nav-item">
                                 <a href="{{ url('inventory/stockadjustments')}}" class="nav-link {{ $isInventoryAdjustmentsActive ? 'active' : '' }}">
                                     Adjustments</a>
+                            </li>
+
+                            <li class="nav-item">
+                                <a href="{{ url('farms/stock') }}" class="nav-link {{ $isMaterialTransfer ? 'active' : '' }}">
+                                <span>Material Transfer</span></a>
                             </li>
 
                             <li class="nav-item">

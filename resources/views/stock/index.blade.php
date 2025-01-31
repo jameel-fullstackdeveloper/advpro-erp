@@ -295,6 +295,7 @@ $endingbal = 0;
                             <thead class="table-light">
                                 <tr>
                                     <th>Date</th>
+                                    <th>Type</th>
                                     <th>Description</th>
                                     <th style="text-align:right">Stock In</th>
                                     <th style="text-align:right">Stock Out</th>
@@ -317,6 +318,32 @@ $endingbal = 0;
                                             {{ $entry['date'] }}
                                         @endif
                                     </td>
+
+                                    <td>
+                                            @if($entry['reference_number'] == 'Shortage')
+                                                <span class="text-muted">Shortage</span>
+                                            @elseif($entry['reference_number'] == 'Excess')
+                                                <span class="text-muted">Excess</span>
+                                            @elseif($entry['reference_number'] == 'Production')
+                                                <span class="text-muted">Production</span>
+                                            @elseif($entry['reference_number'] == 'Sale Return')
+                                                <span class="text-muted">Sale Return</span>
+                                            @elseif($entry['reference_number'] == 'Sale')
+                                                <span class="text-muted">Sale</span>
+                                            @elseif($entry['reference_number'] == 'Material Transfer')
+                                                <span class="text-muted">Material Transfer</span>
+                                            @elseif($entry['reference_number'] == 'Consumption')
+                                                <span class="text-muted">Consumption</span>
+                                            @elseif($entry['reference_number'] == 'Purchase Return')
+                                                <span class="text-muted">Purchase Return</span>
+                                            @elseif($entry['reference_number'] == 'Purchases')
+                                                <span class="text-muted">Purchase</span>
+                                            @endif
+
+
+                                    </td>
+
+
                                     <td>{{ $entry['description'] }}</td>
                                     <td style="text-align:right">{{ number_format($entry['stock_in'],2 ) }}</td>
                                     <td style="text-align:right">{{ number_format($entry['stock_out'],2 ) }}</td>
@@ -333,9 +360,10 @@ $endingbal = 0;
 
                                 <tfoot class="table-light">
                                     <tr>
-                                        <td colspan="2" style="font-weight:bold;text-align:center;">Total</td>
+                                        <td colspan="3" style="font-weight:bold;text-align:center;">Total</td>
                                         <td style="font-weight:bold;text-align:right"> {{ number_format($totalStockIn,2 ) }}</td>
                                         <td style="font-weight:bold;text-align:right"> {{ number_format($totalStockOut,2 ) }}</td>
+
                                         <td></td>
                                     </tr>
 

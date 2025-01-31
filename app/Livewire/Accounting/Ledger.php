@@ -20,6 +20,9 @@ use App\Models\SalesInvoiceFarmItem;
 use App\Models\PurchaseFarmBill;
 use App\Models\PurchaseFarmBillItem;
 
+use App\Models\MaterialTransfer;
+use App\Models\MaterialTransferItem;
+
 
 
 
@@ -323,8 +326,27 @@ class Ledger extends Component
                }
 
 
+            } elseif($entry->voucher_type == 'material-transfer') {
 
-            } else {
+                $materialTransfer = MaterialTransfer::with('items.product', 'farm')
+                ->where('reference_number', $entry->reference_number)
+                ->first();
+
+                $descriptionParts = [];
+
+                foreach ($materialTransfer->items as $item) {
+                    $productName = $item->product->name ?? 'Unknown Product';
+                    $quantity = $item->quantity;
+                    $unitPrice = number_format($item->unit_price, 2);
+
+                    $descriptionParts[] = "{$productName} ({$quantity} x {$unitPrice})";
+                }
+
+                // Join all product details into a single string
+                $entry->full_description = implode(', ', $descriptionParts);
+            }
+
+            else {
                 // Existing logic for other reference types
                 if (strpos($entry->voucher_description, 'Invoice') !== false || strpos($entry->voucher_description, 'Purchase Bill') !== false) {
 

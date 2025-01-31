@@ -11,6 +11,9 @@ use App\Models\SalesInvoiceItem;
 
 use App\Models\SalesReturnItem;
 use App\Models\StockMaterialAdjustment;
+use App\Models\MaterialTransfer;
+use App\Models\MaterialTransferItem;
+
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 
@@ -44,6 +47,7 @@ class StockController extends Controller
 
     public function filter(Request $request)
     {
+
         // Validate inputs
         $validated = $request->validate([
             'startDate' => 'required|date|before_or_equal:endDate',
@@ -66,6 +70,7 @@ class StockController extends Controller
         // Add the opening balance entry to the ledger for the start date
         $ledger[] = [
             'date' => $validated['startDate'],
+            'reference_number' => '',
             'description' => 'Opening Balance',
             'stock_in' => 0,
             'stock_out' => 0,
@@ -87,6 +92,7 @@ class StockController extends Controller
                 $currentBalance += $purchase->net_quantity; // Add purchase quantity to the balance
                 $ledger[] = [
                     'date' => $purchase->bill_date,
+                    'reference_number' => 'Purchases',
                     'description' => $purchase->bill_number,
                     'stock_in' => $purchase->net_quantity,
                     'stock_out' => 0,
@@ -102,12 +108,13 @@ class StockController extends Controller
                 ->get();
 
             foreach ($returns as $return) {
-                $currentBalance += $return->return_quantity; // Add return quantity to the balance
+                $currentBalance -= $return->return_quantity; // Add return quantity to the balance
                 $ledger[] = [
                     'date' => \Carbon\Carbon::parse($return->return_date)->format('d-m-Y'),
-                    'description' => 'Return',
-                    'stock_in' => $return->return_quantity,
-                    'stock_out' => 0,
+                    'reference_number' => 'Purchase Return',
+                    'description' => 'Purchase Return',
+                    'stock_in' => 0,
+                    'stock_out' => $return->return_quantity,
                     'balance' => $currentBalance,
                 ];
             }
@@ -123,6 +130,7 @@ class StockController extends Controller
                 $currentBalance -= $consume->quantity_used; // Subtract consumed quantity from the balance
                 $ledger[] = [
                     'date' => \Carbon\Carbon::parse($consume->production_date)->format('d-m-Y'),
+                    'reference_number' => 'Consumption',
                     'description' => 'Consumption #' . $consume->id,
                     'stock_in' => 0,
                     'stock_out' => $consume->quantity_used,
@@ -141,6 +149,7 @@ class StockController extends Controller
                 $currentBalance -= $shortage->shortage; // Subtract consumed quantity from the balance
                 $ledger[] = [
                     'date' => \Carbon\Carbon::parse($shortage->adj_date)->format('d-m-Y'),
+                    'reference_number' => 'Shortage',
                     'description' => 'Stock Shortage : Adjustment ID # ' . $shortage->id ,
                     'stock_in' => 0,
                     'stock_out' => $shortage->shortage,
@@ -158,12 +167,36 @@ class StockController extends Controller
                 $currentBalance += $excesse->exccess; // Subtract consumed quantity from the balance
                 $ledger[] = [
                     'date' => \Carbon\Carbon::parse($excesse->adj_date)->format('d-m-Y'),
+                    'reference_number' => 'Exccess',
                     'description' => 'Stock Exccess : Adjustment ID # ' . $excesse->id ,
                     'stock_in' => $excesse->exccess,
                     'stock_out' => 0,
                     'balance' => $currentBalance,
                 ];
             }
+
+
+            // Transfers
+            $transfers = MaterialTransferItem::where('item_id', $item->id)
+                ->join('material_transfer_farms', 'material_transfer_farms.id', '=', 'material_transfer_farms_detail.material_transfer_id')
+                ->join('chart_of_accounts', 'chart_of_accounts.id', '=', 'material_transfer_farms.farm_account')
+                ->whereBetween('material_transfer_farms.transfer_date', [$validated['startDate'], $validated['endDate']])
+                ->select('material_transfer_farms.*', 'material_transfer_farms_detail.quantity',  'material_transfer_farms_detail.unit_price' , 'chart_of_accounts.name as farmname')
+                ->get();
+
+
+            foreach ($transfers as $transfer) {
+                $currentBalance -= $transfer->quantity; // Subtract consumed quantity from the balance
+                $ledger[] = [
+                    'date' => \Carbon\Carbon::parse($transfer->transfer_date)->format('d-m-Y'),
+                    'reference_number' => 'Material Transfer',
+                    'description' => $transfer->reference_number  . ', '  . $transfer->farmname .    ',  Price '  . number_format($transfer->unit_price,2) . '' ,
+                    'stock_in' => 0,
+                    'stock_out' => $transfer->quantity,
+                    'balance' => $currentBalance,
+                ];
+            }
+
 
         }
 
@@ -179,6 +212,7 @@ class StockController extends Controller
                 $currentBalance -= $sale->quantity; // Subtract sale quantity from the balance
                 $ledger[] = [
                     'date' => \Carbon\Carbon::parse($sale->invoice_date)->format('d-m-Y'),
+                    'reference_number' => 'Sale',
                     'description' => $sale->invoice_number,
                     'stock_in' => 0,
                     'stock_out' => $sale->quantity,
@@ -197,7 +231,8 @@ class StockController extends Controller
                 $currentBalance += $return->return_quantity; // Add return quantity to the balance
                 $ledger[] = [
                     'date' => \Carbon\Carbon::parse($return->return_date)->format('d-m-Y'),
-                    'description' => 'Return',
+                    'reference_number' => 'Sale Return',
+                    'description' => 'Sale Return',
                     'stock_in' => $return->return_quantity,
                     'stock_out' => 0,
                     'balance' => $currentBalance,
@@ -213,6 +248,7 @@ class StockController extends Controller
             $currentBalance += $purchase->net_quantity; // Add purchase quantity to the balance
             $ledger[] = [
                 'date' => $purchase->production_date,
+                'reference_number' => 'Production',
                 'description' => 'Production # ' . $purchase->id ,
                 'stock_in' => $purchase->actual_produced,
                 'stock_out' => 0,
@@ -230,6 +266,7 @@ class StockController extends Controller
              $currentBalance -= $shortage->shortage; // Subtract consumed quantity from the balance
              $ledger[] = [
                  'date' => \Carbon\Carbon::parse($shortage->adj_date)->format('d-m-Y'),
+                 'reference_number' => 'Shortage',
                  'description' => 'Stock Shortage : Adjustment ID # ' . $shortage->id ,
                  'stock_in' => 0,
                  'stock_out' => $shortage->shortage,
@@ -247,6 +284,7 @@ class StockController extends Controller
              $currentBalance += $excesse->exccess; // Subtract consumed quantity from the balance
              $ledger[] = [
                  'date' => \Carbon\Carbon::parse($excesse->adj_date)->format('d-m-Y'),
+                 'reference_number' => 'Exccess',
                  'description' => 'Stock Exccess : Adjustment ID # ' . $excesse->id ,
                  'stock_in' => $excesse->exccess,
                  'stock_out' => 0,
@@ -277,6 +315,8 @@ class StockController extends Controller
 
         // Sort items by name
         $items = $items->sortBy('name');
+
+       // dd($ledger);
 
         return view('stock.index', [
             'startDate' => $validated['startDate'],
@@ -464,10 +504,12 @@ class StockController extends Controller
             $totalShortage = $this->getShortages($purchaseItem->id, $firstDate, $lastDate);
             $totalExccess= $this->getExcesses($purchaseItem->id, $firstDate, $lastDate);
 
+            $totalTransfer= $this->getTransfer($purchaseItem->id, $firstDate, $lastDate);
+
             $totalPurchaseReturn= $this->getPurchaseReturn($purchaseItem->id, $firstDate, $lastDate);
 
             // Closing balance is calculated as opening balance + purchases - consumption
-            $closingBalance = $openingBalance + $totalPurchasesAndPrices['totalPurchases']  + $totalPurchaseReturn + $totalExccess - ($totalShortage + $totalConsumption);
+            $closingBalance = $openingBalance + $totalPurchasesAndPrices['totalPurchases']  + $totalPurchaseReturn + $totalExccess - ($totalShortage + $totalConsumption + $totalTransfer);
 
             // Add the opening balance entry to the ledger for each item
             $ledger[] = [
@@ -568,6 +610,24 @@ class StockController extends Controller
         return $totalConsumption;
     }
 
+    private function getTransfer($itemId, $firstDate, $lastDate)
+    {
+        $excessesgets = MaterialTransferItem::where('item_id', $itemId)
+            ->join('material_transfer_farms', 'material_transfer_farms.id', '=', 'material_transfer_farms_detail.material_transfer_id')
+            ->whereBetween('material_transfer_farms.transfer_date', [$firstDate, $lastDate])
+            ->where('material_transfer_farms_detail.quantity', '>', 0)
+            ->get();
+
+        $totalExccess= 0;
+        foreach ($excessesgets as $excessesget) {
+                $totalExccess += $excessesget->quantity;
+            }
+
+        return $totalExccess;
+    }
+
+
+
     private function getShortages($itemId, $firstDate, $lastDate)
     {
         $shortagesgets = StockMaterialAdjustment::where('material_id', $itemId)
@@ -597,6 +657,7 @@ class StockController extends Controller
 
         return $totalExccess;
     }
+
 
     private function getSaleReturn($itemId, $firstDate, $lastDate)
     {

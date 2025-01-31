@@ -131,7 +131,9 @@ class TrialBalance extends Component
 
         }
 
-        $totalStockValueClosing = $this->getStockValueClosing($this->startDate, $this->endDate); // Add this line
+        //$totalStockValueClosing = $this->getStockValueClosing($this->startDate, $this->endDate); // Add this line
+
+        $totalStockValueClosing = 0; // Add this line
 
 
 

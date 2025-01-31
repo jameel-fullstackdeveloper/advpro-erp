@@ -329,14 +329,6 @@
                             @endforeach
                         @endif
                     @endforeach
-                     <!-- Add row for the total value of stock (closing) -->
-                     <tr>
-                        <td style="text-align:left;padding-left: 40px;" class="text-uppercase">Value of Stock (Opening)</td>
-                        <td style="text-align:right;">
-                            {{ number_format($trialBalanceData['Stock']['Value of Stock (Closing)'], 2) }}
-                        </td>
-                        <td> - </td>
-                    </tr>
                 </tbody>
                 <tfoot style="background-color: #e9ecef;">
                     <tr>
@@ -350,7 +342,7 @@
 
             <div class="d-flex justify-content-center text-danger text-uppercase fs-14 fw-bold">
                 Difference:
-                {{ number_format(($totalDebit + $trialBalanceData['Stock']['Value of Stock (Closing)'] ) - $totalCredit), 2 }}
+                {{ number_format($totalDebit  - $totalCredit) }}
             </div>
 
         </div>

@@ -5,6 +5,7 @@ use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\Sales\InvoiceController;
 use App\Http\Controllers\Sales\InvoiceFarmController;
+use App\Http\Controllers\Farms\FarmStockController;
 use App\Http\Controllers\Sales\SalesreportController;
 use App\Http\Controllers\Purchase\BillController;
 use App\Http\Controllers\Purchase\BillFarmController;
@@ -24,6 +25,7 @@ use App\Http\Controllers\Farms\FarmsController;
 use App\Http\Middleware\RestrictIP;
 use App\Http\Controllers\WhitelistAuthController;
 use App\Http\Controllers\IpWhitelistController;
+
 
 
 /*
@@ -171,6 +173,11 @@ Route::middleware([
 
     Route::get('farms/invoices/farms/{id}/edit', [InvoiceFarmController::class, 'edit'])->name('invoicesfarms.edit');
     Route::put('farms/invoices/farms/{id}', [InvoiceFarmController::class, 'update'])->name('invoicesfarms.update');
+
+
+     //create and stock
+     Route::get('farms/stock/create', [FarmStockController::class, 'index'])->name('farmsstock.create');
+     Route::post('farms/stock/farms', [FarmStockController::class, 'store'])->name('farmsstock.store');
 
    /********   End of Sale Invoices (Farms)   ********/
 

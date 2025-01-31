@@ -204,9 +204,9 @@
                                         <td>
 
 
-                                                <div class="hstack gap-3 flex-wrap">
+                                                <div class="hstack gap-1 flex-wrap">
 
-                                                    @if(in_array($account->id, [1,2,3,4,5,6,7,8,9,10,11,12,13,14]))
+                                                    @if(in_array($account->id, [1,2,3,4,5,6,7,8,9,10,11,12,13,14,610]))
                                                         @can('accounting chart of account edit')
                                                         <a wire:click="edit({{ $account->id }})" href="javascript:void(0);" class="link-success fs-15"><i class="ri-edit-2-line"></i></a>
                                                          @endcan
@@ -284,7 +284,7 @@
 
                                             <!-- COA Head Dropdown -->
                                             <div class="form-group mt-2">
-                                            @if(in_array($selected_id, [1,2,3,4,5,6,7,8,9,10,11,12,13,14]))
+                                            @if(in_array($selected_id, [1,2,3,4,5,6,7,8,9,10,11,12,13,14,610]))
 
 
                                                 @else

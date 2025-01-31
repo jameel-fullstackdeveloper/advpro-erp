@@ -598,6 +598,9 @@ tr {
                                             @elseif(Str::contains($entry->reference_number, 'JV'))
                                                 <!-- This is a Journal Voucher -->
                                                 <span class="text-muted">Journal Voucher</span>
+                                            @elseif(Str::contains($entry->reference_number, 'MTF'))
+                                                <!-- This is a Journal Voucher -->
+                                                <span class="text-muted">Material Transfer</span>
                                             @else
 
                                             @endif
