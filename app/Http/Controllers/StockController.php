@@ -508,8 +508,9 @@ class StockController extends Controller
 
             $totalPurchaseReturn= $this->getPurchaseReturn($purchaseItem->id, $firstDate, $lastDate);
 
-            // Closing balance is calculated as opening balance + purchases - consumption
-            $closingBalance = $openingBalance + $totalPurchasesAndPrices['totalPurchases']  + $totalPurchaseReturn + $totalExccess - ($totalShortage + $totalConsumption + $totalTransfer);
+             // Closing balance is calculated as opening balance + purchases - consumption
+             $closingBalance = $openingBalance + $totalPurchasesAndPrices['totalPurchases']   + $totalExccess - ($totalShortage + $totalConsumption + $totalTransfer + $totalPurchaseReturn);
+
 
             // Add the opening balance entry to the ledger for each item
             $ledger[] = [
