@@ -19,6 +19,7 @@ use App\Models\ChartOfAccount; // Import ChartOfAccount for customers
 use App\Models\ChartOfAccountGroup; // Import ChartOfAccount for customers
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use App\Models\Items;
 use Carbon\Carbon;
 
 
@@ -50,8 +51,11 @@ class PurchasereportController extends Controller
             ->where('company_id', $companyId)
             ->get();
 
+              // Get the current month
+        $firstDate = Carbon::now()->startOfMonth()->format('Y-m-d');
+        $lastDate = Carbon::now()->endOfMonth()->format('Y-m-d');
 
-        return view('purchase.reports.index', compact('todayDate', 'customersGroups'));
+        return view('purchase.reports.index', compact('todayDate', 'customersGroups','firstDate','lastDate'));
     }
 
     public function creditorreport(Request $request)
@@ -349,6 +353,34 @@ class PurchasereportController extends Controller
 
 
     return view('purchase.reports.creditor', compact('customers', 'selectedDate'));
+    }
+
+    public function purchase_register_report(Request $request) {
+
+        $companyId = session('company_id'); // Retrieve the company_id from the session
+
+        // Get the date range from the request
+        $firstDate = $request->firstdate;
+        $lastDate = $request->lastdate;
+
+        // Fetch invoices within the date range for the given company
+        $invoices = PurchaseBill::with(['items.product'])
+        ->where('company_id', $companyId)
+        ->whereBetween('bill_date', [$firstDate, $lastDate])
+        ->orderBy('purchase_bills.bill_date')
+        ->get();
+
+
+        // Fetch all products related to the company
+        $products = Items::where('company_id', $companyId)->get()->keyBy('id'); // Key by 'id' for faster lookup
+
+
+        return view('purchase.reports.purchase_register_report', [
+            'firstDate' => $firstDate,
+            'lastDate' => $lastDate,
+            'invoices' => $invoices,
+            'products' => $products,
+        ]);
     }
 
 }

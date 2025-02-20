@@ -321,12 +321,14 @@ Route::middleware([
     Route::get('sales/sales-reports', [SalesreportController::class, 'index']);
     Route::post('sales/sales-reports/debtor-report', [SalesreportController::class, 'debtorreport'])->name('debtorreport');
     Route::post('sales/sales-reports/debtorgroup-report', [SalesreportController::class, 'debtorgroupreport'])->name('debtorgroupreport');
+    Route::post('sales/sale_register_report', [SalesreportController::class, 'sale_register_report'])->name('sale_register_report');
 
 
     //purchases reports
     Route::get('purchases/purchase-reports', [PurchasereportController::class, 'index']);
     Route::post('sales/purchase-reports/creditor-report', [PurchasereportController::class, 'creditorreport'])->name('creditorreport');
     Route::post('sales/purchase-reports/creditorgroup-report', [PurchasereportController::class, 'creditorgroupreport'])->name('creditorgroupreport');
+    Route::post('purchases/purchase_register_report', [PurchasereportController::class, 'purchase_register_report'])->name('purchase_register_report');
 
     //accounts reports
     Route::get('accounting/accounting-reports', [AccountingreportController::class, 'index']);
@@ -341,6 +343,8 @@ Route::middleware([
     Route::get('{any}', [App\Http\Controllers\HomeController::class, 'index'])->name('index');
 
 });
+
+
 
 // Show the login form for the whitelist management
 Route::get('admin/whitelist/login', [WhitelistAuthController::class, 'showLoginForm'])->name('whitelist.login');

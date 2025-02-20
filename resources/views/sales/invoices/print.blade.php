@@ -168,7 +168,7 @@
           @endphp
           <tr class="hover:bg-gray-50">
             <td class="border px-2 py-2 text-center">{{ $index + 1 }}</td>
-            <td class="border px-2 py-2">{{ $item->product->product_name }}</td>
+            <td class="border px-2 py-2">{{ $item->product->name }}</td>
             <td class="border px-2 py-2 text-center">{{ $item->quantity }}</td>
             <td class="border px-2 py-2 text-right">{{ number_format($item->unit_price, 2) }}</td>
             <td class="border px-2 py-2 text-right">{{ number_format($item->net_amount, 2) }}

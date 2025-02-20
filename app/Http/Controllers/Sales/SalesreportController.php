@@ -19,6 +19,7 @@ use App\Models\ChartOfAccount; // Import ChartOfAccount for customers
 use App\Models\ChartOfAccountGroup; // Import ChartOfAccount for customers
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use App\Models\Items;
 use Carbon\Carbon;
 
 
@@ -51,7 +52,12 @@ class SalesreportController extends Controller
             ->get();
 
 
-        return view('sales.reports.index', compact('todayDate', 'customersGroups'));
+        // Get the current month
+        $firstDate = Carbon::now()->startOfMonth()->format('Y-m-d');
+        $lastDate = Carbon::now()->endOfMonth()->format('Y-m-d');
+
+
+        return view('sales.reports.index', compact('todayDate', 'customersGroups','firstDate','lastDate'));
     }
 
     public function debtorreport(Request $request)
@@ -424,6 +430,35 @@ class SalesreportController extends Controller
 
 
         return view('sales.reports.debtor', compact('customers', 'selectedDate'));
+    }
+
+
+    public function sale_register_report(Request $request)
+    {
+        $companyId = session('company_id'); // Retrieve the company_id from the session
+
+        // Get the date range from the request
+        $firstDate = $request->firstdate;
+        $lastDate = $request->lastdate;
+
+        // Fetch invoices within the date range for the given company
+        $invoices = SalesInvoice::with(['salesOrder', 'items'])
+        ->where('company_id', $companyId)
+        ->whereBetween('invoice_date', [$firstDate, $lastDate])
+        ->orderBy('sales_invoices.invoice_date')
+        ->get();
+
+
+        // Fetch all products related to the company
+        $products = Items::where('company_id', $companyId)->get()->keyBy('id'); // Key by 'id' for faster lookup
+
+
+        return view('sales.reports.sale_register_report', [
+            'firstDate' => $firstDate,
+            'lastDate' => $lastDate,
+            'invoices' => $invoices,
+            'products' => $products,
+        ]);
     }
 
 
