@@ -19,8 +19,12 @@ class RestrictIP
 
     public function handle(Request $request, Closure $next): Response
     {
+
+        return $next($request);
+
+
           // Fetch allowed IPs from the database
-     $allowedIps = IpWhitelist::pluck('ip_address')->toArray();  // Retrieve IPs as an array
+    /* $allowedIps = IpWhitelist::pluck('ip_address')->toArray();  // Retrieve IPs as an array
 
 
      // Add localhost (IPv4 and IPv6) to the allowed IPs
@@ -32,6 +36,9 @@ class RestrictIP
             abort(Response::HTTP_FORBIDDEN, 'Your IP is not allowed.Contact to Administrator');
         }
 
-        return $next($request);
+        return $next($request); */
+
+
+
     }
 }

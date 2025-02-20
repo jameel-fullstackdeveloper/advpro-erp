@@ -49,7 +49,7 @@ Route::middleware([
     'auth:sanctum',
     config('jetstream.auth_session'),
     'verified',
-   // RestrictIP::class,
+    RestrictIP::class,
 ])->group(function () {
 
 
