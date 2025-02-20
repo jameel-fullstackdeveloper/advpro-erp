@@ -459,7 +459,8 @@
                             @endif
                         </td>
 
-                        <td style="word-wrap: break-word; white-space: normal;"> @php
+                        <td style="word-wrap: break-word; white-space: normal;">
+                            @php
                                 $farmAccount = \App\Models\ChartOfAccount::find($invoice->farm_account); // Get the farm account associated with the invoice
                             @endphp
                             <span class="text-info fw-bold">{{ $farmAccount ? $farmAccount->name : 'N/A' }} </span>

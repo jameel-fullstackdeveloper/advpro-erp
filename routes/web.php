@@ -334,6 +334,14 @@ Route::middleware([
     Route::get('accounting/accounting-reports', [AccountingreportController::class, 'index']);
     Route::post('accounting/cash-bank-report', [AccountingreportController::class, 'cashbank_report'])->name('cashbank_report');
 
+
+    //Farm Reports
+    Route::get('farms/reports', [FarmsController::class, 'farm_reports']);
+    Route::post('farm/farm_sale_report', [FarmsController::class, 'farm_sale_report'])->name('farm_sale_report');
+    Route::post('farm/farm_purchase_report', [FarmsController::class, 'farm_purchase_report'])->name('farm_purchase_report');
+    Route::post('farm/farm_expense_report', [FarmsController::class, 'farm_expense_report'])->name('farm_expense_report');
+
+
     //test
     Route::get('/opening-balance', [VoucherController::class, 'showOpeningBalanceForm'])->name('opening_balance.form');
     Route::post('/opening-balance', [VoucherController::class, 'storeOpeningBalance'])->name('opening_balance.store');

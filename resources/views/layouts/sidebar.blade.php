@@ -384,13 +384,16 @@
             @php
                         // Check if the current route matches any of the inventory pages
                         $isFarmsActive = Request::is('farms') || Request::is('farms/farms') ||
-                        Request::is('farms/invoicesfarms') || Request::is('farms/bills/farms') || Request::is('farms/expenses') || Request::is('farms/stocks');
+                        Request::is('farms/invoicesfarms') || Request::is('farms/bills/farms') || Request::is('farms/expenses') || Request::is('farms/stocks')
+                        ||  Request::is('farms/reports')
+                        ;
                         $isFarmsListActive = Request::is('farms/farms');
                         $isFarmInvoicesActive = Request::is('farms/invoicesfarms');
                         $isFarmBillsActive = Request::is('farms/bills/farms');
 
                         $isFarmExpsActive = Request::is('farms/expenses');
                         $isFarmStocksActive = Request::is('farms/stock');
+                        $isFarmsReportActive = Request::is('farms/reports');
 
 
             @endphp
@@ -431,7 +434,7 @@
                             </li>
 
                             <li class="nav-item">
-                                <a href="{{ url('farms/reports') }}" class="nav-link {{ $isFarmStocksActive ? 'actived' : '' }}">
+                                <a href="{{ url('farms/reports') }}" class="nav-link {{ $isFarmsReportActive ? 'active' : '' }}">
                                 <span>Reports</span></a>
                             </li>
 

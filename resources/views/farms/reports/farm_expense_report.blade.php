@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <link rel="shortcut icon" href="{{ URL::asset('build/images/favicon.ico') }}">
-  <title>Sale Register (Mill) | QuickERP</title>
+  <title>Expenses (Farms) | QuickERP</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&family=Open+Sans:wght@400;600&display=swap" rel="stylesheet">
   <style>
@@ -122,7 +122,7 @@
       </div>
     </div>
     <div class="report-title">
-      <h2>SALE REGISTER (MILL)</h2>
+      <h2>EXPENSES (FARM)</h2>
       <p>From: <strong>{{ \Carbon\Carbon::parse($firstDate)->format('d-m-Y') }}</strong> to
         <strong>{{ \Carbon\Carbon::parse($lastDate)->format('d-m-Y') }}</strong>
       </p>
@@ -131,96 +131,95 @@
 
   <!-- Table Section -->
   <table>
-    <thead>
-      <tr>
-        <th>Date</th>
-        <th>Invoice #</th>
-        <th>Customer Name</th>
-        <th>Farm Details</th>
-        <th>Product Name</th>
-        <th>Quantity</th>
-        <th>Price</th>
-        <th>Gross Amount</th>
-        <th>Discount <br/><small>Amount & Rate</small></th>
-        <th>Bonus <br/><small>Amount & Rate</small></th>
-        <th>Net Amount</th>
-      </tr>
-    </thead>
+
     <tbody>
-      @php
-        $totalBags = 0;
-        $totalGross = 0;
-        $totalDiscount = 0;
-        $totalBonus = 0;
-        $totalAmount = 0;
-      @endphp
+    @php
+    $groupedVouchers = $vouchers->groupBy(function ($voucher) {
+        return optional($voucher->voucherDetails->firstWhere('type', 'debit'))->account->name ?? 'Unknown Farm';
+    });
 
-      @foreach($invoices as $invoice)
-        @foreach($invoice->items as $index => $item)
-          @php
-            $bags = floatval($item->quantity ?? 0);
-            $netAmount = floatval($item->net_amount ?? 0);
-            $discount = floatval($item->discount_amount ?? 0);
-            $bonus = floatval($item->discount_per_bag_amount ?? 0);
-            $amountInclTax = floatval($item->amount_incl_tax ?? 0);
+    $totalAmountPay = 0;
+@endphp
 
-            $totalBags += $bags;
-            $totalGross += $netAmount;
-            $totalDiscount += $discount;
-            $totalBonus += $bonus;
-            $totalAmount += $amountInclTax;
-          @endphp
+@forelse ($groupedVouchers as $farmName => $farmVouchers)
+    @php
+        $farmTotal = 0;
+    @endphp
 
-          <tr>
-            <td>{{ \Carbon\Carbon::parse($invoice->invoice_date)->format('d-m-Y') }}</td>
-            <td>{{ $invoice->invoice_number }}</td>
-            <td>{{ $invoice->customer->name ?? 'N/A' }}</td>
-            <td> @if(!empty($invoice->salesOrder->farm_name))
-                    {{ $invoice->salesOrder->farm_name }}
-                @endif
-                @if(!empty($invoice->salesOrder->farm_address))
-                    @if(!empty($invoice->salesOrder->farm_name)), @endif
-                    {{ $invoice->salesOrder->farm_address }}
-                @endif
-            </td>
-            <td>{{ $item->product->name ?? 'N/A' }}</td>
-            <td>{{ $item->quantity }}</td>
-            <td>{{ number_format($item->unit_price, 2) }}</td>
-            <td>{{ number_format($netAmount, 2) }}</td>
-            <td>@if($discount > 0)
-                    {{ number_format($discount, 2) }}
-                    @if($item->discount_rate > 0)
-                        <small>@ {{ number_format($item->discount_rate) }}%</small>
-                    @endif
-                @else
-                    -
-                @endif
-            </td>
-            <td>
-                @if($bonus > 0)
-                    {{ number_format($bonus, 2) }}
-                    @if($item->discount_per_bag_rate > 0)
-                        <small>@ {{ number_format($item->discount_per_bag_rate) }}%</small>
-                    @endif
-                @else
-                    -
 
-                @endif
-            </td>
-            <td>{{ number_format($amountInclTax, 2) }}</td>
-          </tr>
-        @endforeach
-      @endforeach
 
-      <tr>
-      <th colspan="5" class="text-center">Total:</th>
-      <th>{{ number_format($totalBags, 2) }}</th>
-      <th>-</th>
-      <th>{{ number_format($totalGross, 2) }}</th>
-      <th>{{ number_format($totalDiscount, 2) }}</th>
-      <th>{{ number_format($totalBonus, 2) }}</th>
-      <th>{{ number_format($totalAmount, 2) }}</th>
+
+    <!-- Group Header -->
+    <tr style="margin-top:10px;">
+        <th colspan="5" class="bg-gray-200 text-lg text-center">{{ $farmName }}</th>
     </tr>
+
+    <!-- Repeat Table Headers for Each Group -->
+    <tr class="bg-gray-100">
+        <th>Date</th>
+        <th>Voucher #</th>
+        <th>Payment From</th>
+        <th>Expense Detail</th>
+        <!--<th>Description</th>-->
+        <th>Amount</th>
+    </tr>
+
+    @foreach ($farmVouchers as $voucher)
+        @php
+            // Get the debit account (payment from)
+            $debitAccount = $voucher->voucherDetails->firstWhere('type', 'credit');
+
+            // Get all credit accounts (expenses for the farm)
+            $creditAccounts = $voucher->voucherDetails->where('type', 'debit');
+        @endphp
+
+        @foreach ($creditAccounts as $creditAccount)
+            <tr>
+                <td>{{ \Carbon\Carbon::parse($voucher->date)->format('d-m-Y') }}</td>
+                <td>{{ $voucher->reference_number }}</td>
+                <td>{{ $debitAccount ? $debitAccount->account->name : 'N/A' }}</td>
+                <td>{{ $voucher->exp_to ? \App\Models\ChartOfAccount::find($voucher->exp_to)->name : 'N/A' }}
+                    <small>({{ $creditAccount->narration }})</small>
+
+
+                </td>
+                <!--<td>{{ $creditAccount->narration }}</td>-->
+                <td>{{ number_format($creditAccount->amount) }}</td>
+            </tr>
+            @php
+                $farmTotal += $creditAccount->amount;
+            @endphp
+        @endforeach
+    @endforeach
+
+    <!-- Group Total Row -->
+    <tr class="totals-row">
+        <th colspan="4" class="text-right bg-gray-100">Total for {{ $farmName }}:</th>
+        <th class="bg-gray-100">{{ number_format($farmTotal) }}</th>
+    </tr>
+
+     <!-- Empty row for spacing -->
+     <tr><td colspan="5" style="height: 15px; background: white; border: none;"></td></tr>
+
+    @php
+        $totalAmountPay += $farmTotal;
+    @endphp
+@empty
+    <tr>
+        <td colspan="7">No vouchers found.</td>
+    </tr>
+@endforelse
+
+<!-- Overall Total Row -->
+
+<!--
+
+<tr class="totals-row">
+    <th colspan="5" class="text-center bg-gray-300">Grand Total:</th>
+    <th class="bg-gray-300">{{ number_format($totalAmountPay) }}</th>
+</tr> -->
+
+
 
     </tbody>
   </table>
