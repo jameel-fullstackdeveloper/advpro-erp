@@ -653,7 +653,7 @@ class InvoiceController extends Controller
         // Validate form data
         $validated = $request->validate([
             'customer_id' => 'required',
-            'invoice_number' => 'required|unique:sales_invoices,invoice_number', // Ensure invoice_number is unique
+           // 'invoice_number' => 'required|unique:sales_invoices,invoice_number', // Ensure invoice_number is unique
             'invoice_date' => 'required|date|date_format:Y-m-d|after_or_equal:' . $allowedYear . '-01-01|before_or_equal:' . $currentYear . '-12-31',
             'invoice_due_days' => 'required',
             'items.*.product_id' => 'required',
@@ -702,7 +702,7 @@ class InvoiceController extends Controller
             // Update invoice details
             $invoice->update([
                 'invoice_date' => $request->invoice_date,
-                'invoice_number' => $request->invoice_number,
+                //'invoice_number' => $request->invoice_number,
                 'invoice_due_days' => $request->invoice_due_days,
                 'customer_id' => $request->customer_id,
                 'broker_id' => $request->broker_id,

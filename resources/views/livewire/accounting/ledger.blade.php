@@ -1,6 +1,24 @@
 <div class="">
     <style>
         @media print {
+
+
+            tfoot {
+        display: table-row-group !important; /* Ensure footer appears only once */
+        page-break-before: avoid; /* Prevent breaking before */
+        page-break-after: avoid; /* Prevent breaking after */
+        break-inside: avoid !important; /* Prevent breaking inside */
+    }
+
+    tfoot tr {
+        page-break-inside: avoid !important; /* Prevent total row from breaking */
+    }
+
+    .tableprint tbody {
+        page-break-after: auto; /* Ensure the body does not force the total row to a new page */
+    }
+
+
     /* Hide unnecessary elements */
     #startDate,
     #endDate,
@@ -44,7 +62,7 @@
     }
 
     th, td {
-        padding: 8px 12px;
+        padding: 8px 10px;
         border: 1px solid #ddd;
         font-size: 0.9rem;
     }
@@ -382,7 +400,39 @@ tr {
 .print-footer {
     display: block !important;
 }
+
+
+.table {
+        table-layout: fixed !important; /* Fix column widths */
+        width: 100% !important;
+    }
+
+    .table th, .table td {
+        padding: 3px !important; /* Reduce padding to decrease column gaps */
+        font-size: 0.85rem !important; /* Reduce font size slightly */
+        text-align: left;
+    }
+
+    /* Adjust specific column widths */
+    .table th:nth-child(1), .table td:nth-child(1) { width: 8%; } /* Date */
+    .table th:nth-child(2), .table td:nth-child(2) { width: 10%; } /* Type */
+    .table th:nth-child(3), .table td:nth-child(3) { width: 12%; } /* Reference No */
+    .table th:nth-child(4), .table td:nth-child(4) { width: 35%; } /* Increase Description Column */
+    .table th:nth-child(5), .table td:nth-child(5) { width: 10%; text-align: right; } /* Debit */
+    .table th:nth-child(6), .table td:nth-child(6) { width: 10%; text-align: right; } /* Credit */
+    .table th:nth-child(7), .table td:nth-child(7) { width: 15%; text-align: right; } /* Balance */
+
+    /* Ensure word wrapping in the description column */
+    .table td:nth-child(4) {
+        word-wrap: break-word;
+        white-space: normal;
+    }
+
+
 }
+
+
+
 
 
     </style>
@@ -509,9 +559,11 @@ tr {
                 @endphp
 
 
-                <h4 class="printable-section  text-white font-weight-bold text-uppercase"
-                style="font-size: 16px;margin-bottom:10px !important;">
-                 {{ $accountTitle }} </h4>
+                <h4 class="printable-section text-white font-weight-bold text-uppercase text-center"
+    style="font-size: 16px; margin-bottom: 10px !important; width: 100%; text-align: center;">
+    {{ $accountTitle }}
+</h4>
+
 
         <div class="row rownpadding">
             <div class="col-md-12">

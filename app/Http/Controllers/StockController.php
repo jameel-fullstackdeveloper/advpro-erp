@@ -336,10 +336,19 @@ class StockController extends Controller
             ->where('purchase_bills.bill_date', '<', $startDate)
             ->sum('purchase_bill_items.net_quantity');
 
+
+
         $returnsBefore = PurchaseReturnItem::where('product_id', $itemId)
             ->join('pruchase_returns', 'pruchase_returns.id', '=', 'purchase_return_items.purchase_return_id')
             ->where('pruchase_returns.return_date', '<', $startDate)
             ->sum('purchase_return_items.return_quantity');
+
+        // Fetch and process sales returns (items with item_type = 'sale')
+        /*$returns = PurchaseReturnItem::where('product_id', $itemId)
+        ->join('pruchase_returns', 'pruchase_returns.id', '=', 'purchase_return_items.purchase_return_id')
+        ->whereBetween('pruchase_returns.return_date', [$firstDate, $lastDate])
+        ->select('pruchase_returns.return_date', 'purchase_return_items.return_quantity')
+        ->get();*/
 
         $consumptionBefore = ProductionDetail::where('raw_material_id', $itemId)
             ->join('productions', 'productions.id', '=', 'production_details.production_id')
@@ -357,8 +366,13 @@ class StockController extends Controller
         ->where('adj_date', '<', $startDate)
         ->sum('exccess'); // Sum up the consumed quantity before the start date
 
+
+        if( $itemId == 5) {
+          //  dd($returnsBefore);
+        }
+
         // Calculate the balance before the start date
-        return $opbal + $purchasesBefore + $returnsBefore   + $excess - $consumptionBefore - $shortage;
+        return $opbal + $purchasesBefore   + $excess - $consumptionBefore - $shortage - $returnsBefore;
     }
 
     // for sales
@@ -413,6 +427,7 @@ class StockController extends Controller
 
     public function stockreportgeneral(Request $request)
     {
+
         // Validate the input date
         $validated = $request->validate([
             'firstdate' => 'required|date', // Ensures valid date format
@@ -492,6 +507,11 @@ class StockController extends Controller
             // Calculate the opening balance for each item before the firstDate
             $openingBalance = $this->calculateBalanceBeforeDate($purchaseItem->id, $purchaseItem->balance, $firstDate);
 
+
+            if($purchaseItem->id == 5 ) {
+               // dd($openingBalance);
+            }
+
             // Get the total purchases and corresponding prices between firstDate and lastDate
             $totalPurchasesAndPrices = $this->getPurchasesAndPricesBetweenDates($purchaseItem->id, $firstDate, $lastDate);
 
@@ -508,9 +528,8 @@ class StockController extends Controller
 
             $totalPurchaseReturn= $this->getPurchaseReturn($purchaseItem->id, $firstDate, $lastDate);
 
-             // Closing balance is calculated as opening balance + purchases - consumption
-             $closingBalance = $openingBalance + $totalPurchasesAndPrices['totalPurchases']   + $totalExccess - ($totalShortage + $totalConsumption + $totalTransfer + $totalPurchaseReturn);
-
+            // Closing balance is calculated as opening balance + purchases - consumption
+            $closingBalance = $openingBalance + $totalPurchasesAndPrices['totalPurchases']   + $totalExccess - ($totalShortage + $totalConsumption + $totalTransfer + $totalPurchaseReturn);
 
             // Add the opening balance entry to the ledger for each item
             $ledger[] = [

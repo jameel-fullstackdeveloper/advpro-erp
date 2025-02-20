@@ -149,7 +149,7 @@ class FarmStockController extends Controller
                 //Credit the Stock
                 VoucherDetail::create([
                     'voucher_id' => $voucher->id,
-                    'account_id' => 605,
+                    'account_id' => 610,
                     'amount' => $totalSales,
                     'type' => 'credit',
                     'narration' => 'Material Transfer:' . $request->reference_number,

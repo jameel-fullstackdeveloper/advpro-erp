@@ -330,8 +330,7 @@ Route::middleware([
 
     //accounts reports
     Route::get('accounting/accounting-reports', [AccountingreportController::class, 'index']);
-    //Route::post('accounting/purchase-reports/creditor-report', [AccountingreportController::class, 'creditorreport'])->name('creditorreport');
-    //Route::post('accounting/purchase-reports/creditorgroup-report', [AccountingreportController::class, 'creditorgroupreport'])->name('creditorgroupreport');
+    Route::post('accounting/cash-bank-report', [AccountingreportController::class, 'cashbank_report'])->name('cashbank_report');
 
     //test
     Route::get('/opening-balance', [VoucherController::class, 'showOpeningBalanceForm'])->name('opening_balance.form');

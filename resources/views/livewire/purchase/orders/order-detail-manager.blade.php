@@ -141,22 +141,17 @@
                         <td>
                                 @foreach ($order->items as $item)
                                     <strong>{{ optional($item->product)->name ?? 'N/A' }}</strong><br>
-                                    <span class="text-warning fs-13 mb-0 fw-bold" >@ {{ $item->price }}</span>
+                                    <span class="text-warning fs-13 mb-0 fw-bold" >@ {{ $item->price }}</span><br/>
                                 @endforeach
                         </td>
 
                         <td>
                                 @foreach ($order->items as $item)
-                                    Order: {{ number_format($item->quantity, 0) }} <small>kgs</small><br>
-                                @endforeach
 
-                                @foreach ($order->items as $item)
-                                    Received: {{ number_format($item->remaining_quantity, 0) }} <small>kgs</small><br>
-                                @endforeach
-
-                                @foreach ($order->items as $item)
-                                    Balance: {{ number_format($item->quantity - $item->remaining_quantity, 0) }} <small>kgs</small><br>
-                                @endforeach
+                            <p>Ord: {{ number_format($item->quantity, 0) }} |
+                            Rec: {{ number_format($item->remaining_quantity, 0) }} |
+                            Bal: {{ number_format($item->quantity - $item->remaining_quantity, 0) }} </p>
+                            @endforeach
 
 
                         </td>

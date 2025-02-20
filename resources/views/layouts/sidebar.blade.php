@@ -396,6 +396,7 @@
             @endphp
 
 
+            @if($hasCustomerAccess)
             <li class="nav-item">
                     <a class="nav-link menu-link  {{ $isFarmsActive ? 'active' : '' }}" href="#sidebarFarms" data-bs-toggle="collapse" role="button"
                         aria-expanded="{{ $isFarmsActive ? 'true' : 'false' }}" aria-controls="sidebarFarms">
@@ -438,6 +439,7 @@
                     </div>
                 </li><!-- end Purchase Menu -->
 
+            @endif
 
 
             @php

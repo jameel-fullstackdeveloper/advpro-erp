@@ -60,8 +60,7 @@
 <!-- Spinner element -->
 <div wire:loading wire:target="store, update,deleteCustomer,itemsPerPage,searchTerm,filter,imagePV" class="spinner"></div>
 
-
-    <div class="row">
+<div class="row">
         <div class="col">
             <div class="card">
                 <div class="card-header align-items-center d-flex">
@@ -69,12 +68,16 @@
                     <div class="flex-shrink-0">
                         <div class="form-check form-switch form-switch-right form-switch-md">
                             <button type="button" wire:click="createVoucherPV()" class="btn btn-danger btn-label">
-                                <i class="ri-add-circle-line label-icon align-middle fs-16 me-2"></i> Add Expense by Cash
+                                <i class="ri-add-circle-line label-icon align-middle fs-16 me-2"></i>Cash
                             </button>
 
                             <button type="button" wire:click="createBankVoucherPV()" class="btn btn-info btn-label">
-                                <i class="ri-add-circle-line label-icon align-middle fs-16 me-2"></i> Add Expense by Bank
+                                <i class="ri-add-circle-line label-icon align-middle fs-16 me-2"></i>Bank
                             </button>
+
+                            <!--<button type="button" wire:click="createBankVoucherPV()" class="btn btn-success btn-label">
+                                <i class="ri-add-circle-line label-icon align-middle fs-16 me-2"></i>Journal Voucher
+                            </button> -->
 
                         </div>
                     </div>
@@ -354,7 +357,9 @@
                                                             </div>
                                                             <div class="col-3">
                                                                 <label for="paid_to" class="form-label">Payment from</label>
-                                                                <select wire:model="paid_to" class="form-select" id="paid_to">
+
+                                                                <select wire:model="paid_to" class="form-select" id="paid_to" required>
+                                                                    <option value="">---Select---</option>
                                                                     @foreach($bankAndCashAccounts as $account)
                                                                         <option value="{{ $account->id }}">{{ $account->name }}</option>
                                                                     @endforeach

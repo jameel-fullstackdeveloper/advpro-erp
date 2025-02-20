@@ -58,7 +58,7 @@ class FarmExpenseManager extends Component
 
     public function mount()
     {
-        abort_if(!auth()->user()->can('accounting cashbook view'), 403);
+         abort_if(!auth()->user()->can('customers view'), 403);
 
         $this->segmentsCP = Company::all();  // Fetch all segments (companies)
         $this->costCentersCP = Costcenter::all();
@@ -343,6 +343,7 @@ class FarmExpenseManager extends Component
             'voucher_date' => 'required|date|date_format:Y-m-d|after_or_equal:' . $allowedYear . '-01-01|before_or_equal:' . $currentYear . '-12-31',
             'reference_number' => 'required|string|unique:vouchers,reference_number,' . $this->voucherId,
 			'description' => 'string|max:255',
+            'paid_to' => 'required',
             'exp_to' => 'required',  // Ensure cost center is selected
             'voucherDetails.*.account_id' => 'required|exists:chart_of_accounts,id',
             'voucherDetails.*.amount' => 'required|numeric|min:0',
