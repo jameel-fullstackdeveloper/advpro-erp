@@ -17,7 +17,7 @@ use Symfony\Component\HttpFoundation\Response;
 
        // Check if the request IP is in the allowed list
        if (!in_array($request->ip(), $allowedIps)) {
-            abort(Response::HTTP_FORBIDDEN, 'Your IP is not allowed. Contact to Administrator.');
+            //abort(Response::HTTP_FORBIDDEN, 'Your IP is not allowed. Contact to Administrator.');
         }
 
 
