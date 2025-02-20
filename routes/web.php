@@ -49,7 +49,7 @@ Route::middleware([
     'auth:sanctum',
     config('jetstream.auth_session'),
     'verified',
-    RestrictIP::class,
+   // RestrictIP::class,
 ])->group(function () {
 
 
@@ -341,8 +341,6 @@ Route::middleware([
     Route::get('{any}', [App\Http\Controllers\HomeController::class, 'index'])->name('index');
 
 });
-
-
 
 // Show the login form for the whitelist management
 Route::get('admin/whitelist/login', [WhitelistAuthController::class, 'showLoginForm'])->name('whitelist.login');
